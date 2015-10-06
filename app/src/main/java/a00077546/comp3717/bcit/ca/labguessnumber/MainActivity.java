@@ -15,11 +15,14 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText edit;
+    private EditText edittext;
+    private TextView textview;
     private int randomNum;
-    private int gamesPlayed = 0;
-    private int numGuesses  = 0;
-    private double average  = 0;
+    private int numGuesses = 0;
+    private int totGuesses;
+    private int gamesPlayed;
+    private int surrendered;
+    private double average;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,9 +30,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        gamesPlayed++;
-        randomNum = generateRandomNumber(100);
-        edit = (EditText) findViewById(R.id.input);
+        randomNum   = generateRandomNumber(100);
+        totGuesses  = 0;
+        gamesPlayed = 0;
+        surrendered = 0;
+        average     = 0;
+        edittext    = (EditText) findViewById(R.id.input);
     }
 
     @Override
@@ -65,20 +71,28 @@ public class MainActivity extends AppCompatActivity {
         return randomGenerator.nextInt(n) + 1;
     }
 
+    /**
+     *  Generates a new random number, resets the number of guesses to 0,
+     *  and clears the textview message and edittext value.
+     */
+    private void reset() {
+        randomNum   = generateRandomNumber(100);
+        numGuesses  = 0;
+        textview.setText("");
+        edittext.setText("");
+    }
+
     public void submitGuess(final View view) {
 
         final int input;
         final String inputStr;
         final Intent intent;
-        final TextView textview;
         Bundle bundle;
 
-        textview    = (TextView) findViewById(R.id.HiLow);
-        inputStr    = edit.getText().toString();
+        textview    = (TextView) findViewById(R.id.HiLowMsg);
+        inputStr    = edittext.getText().toString();
         intent      = new Intent(this, SecondActivity.class);
         bundle      = new Bundle();
-
-        numGuesses++;
 
         // check if nothing entered
         if (TextUtils.isEmpty(inputStr)) {
@@ -87,33 +101,35 @@ public class MainActivity extends AppCompatActivity {
 
         } else {
 
+            numGuesses++;
             input   = Integer.parseInt(inputStr);
 
             if (input == randomNum) {
 
-                average = average + numGuesses / gamesPlayed;
+                // update stats
+                totGuesses += numGuesses;
+                gamesPlayed++;
+                average = (double) totGuesses / gamesPlayed;
 
                 // pass number of guesses and stats via intent
                 bundle.putInt("numGuesses", numGuesses);
                 bundle.putInt("numGames", gamesPlayed);
                 bundle.putDouble("average", average);
+                bundle.putInt("surrendered", surrendered);
                 bundle.putInt("random", -1);
                 intent.putExtras(bundle);
 
-                // generate a new random number, clear the number of guesses
-                randomNum   = generateRandomNumber(100);
-                numGuesses  = 0;
-                textview.setText("");
-                edit.setText("");
+                // get ready for the new game
+                reset();
 
                 startActivity(intent);
 
             } else if (input < randomNum) {
                 textview.setText(input + " is too low");
-                edit.setText("");
+                edittext.setText("");
             } else {
                 textview.setText(input + " is too high");
-                edit.setText("");
+                edittext.setText("");
             }
         }
     }
@@ -122,24 +138,28 @@ public class MainActivity extends AppCompatActivity {
 
         final Intent intent;
         final Bundle bundle;
-        final TextView textview;
 
-        textview    = (TextView) findViewById(R.id.HiLow);
+        gamesPlayed++;
+        textview    = (TextView) findViewById(R.id.HiLowMsg);
         intent      = new Intent(this, SecondActivity.class);
         bundle      = new Bundle();
+        totGuesses += numGuesses;
+        average     = (double) totGuesses / gamesPlayed;
 
-        System.out.println("----------------- surrender");
-        System.out.println("randomNum: " + randomNum);
         bundle.putInt("random", randomNum);
+        bundle.putInt("numGuesses", numGuesses);
+        bundle.putInt("numGames", gamesPlayed);
+        bundle.putInt("surrendered", surrendered);
+        bundle.putDouble("average", average);
+
         intent.putExtras(bundle);
 
-        // generate a new random number, clear the number of guesses
-        randomNum   = generateRandomNumber(100);
-        numGuesses  = 0;
-        textview.setText("");
-        edit.setText("");
+        // get ready for the new game
+        reset();
 
         startActivity(intent);
     }
+
+
 
 }

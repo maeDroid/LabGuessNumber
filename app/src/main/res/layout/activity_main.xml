@@ -13,7 +13,7 @@
     <TextView
         android:id="@+id/name"
         android:text="@string/name"
-        android:textSize="32sp"
+        android:textSize="36sp"
         android:textColor="#990000"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
 
 
     <TextView
-        android:id="@+id/HiLow"
+        android:id="@+id/HiLowMsg"
         android:textSize="32sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

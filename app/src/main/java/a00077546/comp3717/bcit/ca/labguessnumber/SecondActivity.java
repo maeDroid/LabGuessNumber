@@ -16,9 +16,10 @@ public class SecondActivity extends AppCompatActivity {
         final int numGuesses;
         final int numGames;
         final int random;
+        final int surrendered;
         final double average;
-        final TextView textview1;
-        final TextView textview2;
+        final TextView outputMsg;
+        final TextView statsData;
         Bundle data;
 
         super.onCreate(savedInstanceState);
@@ -30,22 +31,25 @@ public class SecondActivity extends AppCompatActivity {
         numGuesses  = data.getInt("numGuesses");
         numGames    = data.getInt("numGames");
         average     = data.getDouble("average");
+        surrendered = data.getInt("surrendered");
 
-        textview1   = (TextView)findViewById(R.id.outputNumGuesses);
-        textview2   = (TextView) findViewById(R.id.statsData);
+        outputMsg   = (TextView)findViewById(R.id.outputMsg);
+        statsData   = (TextView) findViewById(R.id.statsData);
 
         if (random != -1) {
-            textview1.setText("The correct number was " + random);
+            outputMsg.setText("The correct number was " + random);
         } else {
             if (numGuesses == 1) {
-                textview1.setText("You took only " + numGuesses + " guess!");
+                outputMsg.setText("You took only " + numGuesses + " guess!");
             } else {
-                textview1.setText("You took " + numGuesses + " guesses");
+                outputMsg.setText("You took " + numGuesses + " guesses");
             }
-
-            //textview2.setText("Number of games played: " + numGames + "\nAverage number of guesses: " + average);
         }
 
+        statsData.setText(
+                "Number of games played: " + numGames +
+                        "\nNumber of games surrendered: " + surrendered +
+                        "\nAverage number of guesses: " + average);
     }
 
     @Override
